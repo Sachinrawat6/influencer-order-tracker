@@ -1,19 +1,35 @@
 import axios from 'axios';
-import { API_BASE_URL } from '../constants/index.js';
 
 /**
  * Axios instance shared across the app.
  *
- * - baseURL: in dev we proxy `/api` via vite.config.js → staging backend.
- *   In a real build, set VITE_API_BASE_URL to the prod API origin.
- * - Request interceptor: attach Bearer token from localStorage if present.
- * - Response interceptor: on 401, broadcast an `auth:unauthorized` event so
- *   AuthContext can wipe state + redirect, without api.js importing React.
+ * Base URL resolution:
+ *   - In production (e.g. Netlify build) set VITE_API_BASE_URL to your API
+ *     origin. Both formats work — with or without the `/api` suffix:
+ *       https://cutting-qrcode-api.qurvii.com
+ *       https://cutting-qrcode-api.qurvii.com/api
+ *   - In dev (no env var) we fall back to `/api` and rely on vite.config.js
+ *     to proxy that to the staging backend.
+ *
+ * Interceptors:
+ *   - Request: attach Bearer token from localStorage if present.
+ *   - Response: on 401 (except the login call itself), broadcast an
+ *     `auth:unauthorized` event so AuthContext can wipe state and the
+ *     router can redirect to /login.
  */
 
 const TOKEN_KEY = 'iot_token';
+
+const resolveBaseUrl = () => {
+  const raw = (import.meta.env.VITE_API_BASE_URL || '/api').trim();
+  // Strip a single trailing slash for predictable joining.
+  const stripped = raw.replace(/\/+$/, '');
+  // If the caller already included `/api`, leave it alone. Otherwise append.
+  return /\/api$/.test(stripped) ? stripped : `${stripped}/api`;
+};
+
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: resolveBaseUrl(),
   headers: { 'Content-Type': 'application/json' },
 });
 
@@ -30,10 +46,9 @@ api.interceptors.response.use(
   (res) => res,
   (err) => {
     if (err?.response?.status === 401) {
-      // Notify the app — AuthContext clears state + router redirects.
-      // Skip if the failing call is the login itself; otherwise the toast
-      // would say "session expired" on a wrong-password attempt.
       const url = err.config?.url || '';
+      // Skip the login call so a wrong-password attempt doesn't show
+      // "session expired".
       if (!url.endsWith('/auth/login')) {
         window.dispatchEvent(new CustomEvent('auth:unauthorized'));
       }

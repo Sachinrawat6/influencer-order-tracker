@@ -1,0 +1,30 @@
+# Netlify build + routing config for the Influencer Order Tracker frontend.
+#
+# Required env vars (set in Netlify UI → Site settings → Environment):
+#   VITE_API_BASE_URL  e.g. https://cutting-qrcode-api.qurvii.com/api
+#                          (or without /api — api.js normalizes it)
+#
+# Branch deploys: set the same VITE_API_BASE_URL in branch context if you
+# want a preview build to point at staging-cutting-qrcode-api.qurvii.com.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# SPA fallback — same rule as public/_redirects, kept here for clarity
+# and so Netlify picks it up even if the build output is different.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Sensible long-cache for hashed assets, no-cache for the entry HTML.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
