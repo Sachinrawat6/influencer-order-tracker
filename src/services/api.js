@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../constants/index.js';
 
 /**
  * Axios instance shared across the app.
@@ -11,9 +12,8 @@ import axios from 'axios';
  */
 
 const TOKEN_KEY = 'iot_token';
-
 const api = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || '/api',
+  baseURL: API_BASE_URL,
   headers: { 'Content-Type': 'application/json' },
 });
 
