@@ -8,15 +8,18 @@ export default function ProcessedOrders() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
+  const load = async () => {
+    try {
+      setLoading(true);
+      const res = await orderApi.getProcessed();
+      setOrders(res.data || []);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        const res = await orderApi.getProcessed();
-        setOrders(res.data || []);
-      } finally {
-        setLoading(false);
-      }
-    })();
+    load();
   }, []);
 
   const filtered = orders.filter((o) => {
@@ -53,7 +56,11 @@ export default function ProcessedOrders() {
         </div>
       </div>
 
-      {loading ? <Loader /> : <ProcessedOrdersTable orders={filtered} />}
+      {loading ? (
+        <Loader />
+      ) : (
+        <ProcessedOrdersTable orders={filtered} onChanged={load} />
+      )}
     </div>
   );
 }
