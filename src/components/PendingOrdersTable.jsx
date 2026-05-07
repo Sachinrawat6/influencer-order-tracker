@@ -66,6 +66,15 @@ export default function PendingOrdersTable({ orders, onChanged }) {
     }
   };
 
+  const handleCopy = async (text, label) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      toast.success(`${label} copied to clipboard!`);
+    } catch (err) {
+      toast.error('Failed to copy');
+    }
+  };
+
   if (!orders || orders.length === 0) {
     return (
       <EmptyState
@@ -77,15 +86,15 @@ export default function PendingOrdersTable({ orders, onChanged }) {
   }
 
   return (
-    <div className="card overflow-hidden">
-      <div className="overflow-x-auto">
+    <div className="card overflow-hidden ">
+      <div className="overflow-x-auto ">
         <table className="w-full text-sm">
           <thead className="bg-slate-50 border-b border-slate-200">
             <tr className="text-left text-slate-600">
               <th className="px-5 py-3 font-semibold">Style #</th>
               <th className="px-5 py-3 font-semibold">Size</th>
               <th className="px-5 py-3 font-semibold">Influencer</th>
-              <th className="px-5 py-3 font-semibold">Notes</th>
+              <th className="px-5 py-3 font-semibold">Address</th>
               <th className="px-5 py-3 font-semibold">Created</th>
               <th className="px-5 py-3 font-semibold w-[280px]">Shopify Order ID</th>
               <th className="px-5 py-3 font-semibold text-right">Actions</th>
@@ -106,17 +115,61 @@ export default function PendingOrdersTable({ orders, onChanged }) {
                     </span>
                   </td>
                   <td className="px-5 py-3.5">
-                    <a
-                      href={`https://instagram.com/${o.influencerInstaId}`}
-                      target="_blank"
-                      rel="noreferrer"
-                      className="text-brand-700 hover:text-brand-900 hover:underline"
-                    >
-                      @{o.influencerInstaId}
-                    </a>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`https://instagram.com/${o.influencerInstaId}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-brand-700 hover:text-brand-900 hover:underline"
+                      >
+                        @{o.influencerInstaId}
+                      </a>
+                      <button
+                        onClick={() => handleCopy(o.influencerInstaId, 'Influencer ID')}
+                        className="text-slate-400 hover:text-slate-600 transition-colors"
+                        title="Copy influencer ID"
+                      >
+                        <svg
+                          className="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                          />
+                        </svg>
+                      </button>
+                    </div>
                   </td>
                   <td className="px-5 py-3.5 text-slate-600 max-w-[200px] truncate" title={o.notes}>
-                    {o.notes || '—'}
+                    <div className="flex items-center gap-2">
+                      <span className="truncate">{o.notes || '—'}</span>
+                      {o.notes && (
+                        <button
+                          onClick={() => handleCopy(o.notes, 'Address')}
+                          className="text-slate-400 hover:text-slate-600 transition-colors flex-shrink-0"
+                          title="Copy address"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
+                            />
+                          </svg>
+                        </button>
+                      )}
+                    </div>
                   </td>
                   <td className="px-5 py-3.5 text-slate-600 whitespace-nowrap">
                     {formatDate(o.createdAt)}

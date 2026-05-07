@@ -14,7 +14,12 @@ export default function OrderForm({ onCreated }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!form.styleNumber.trim() || !form.size.trim() || !form.influencerInstaId.trim()) {
+    if (
+      !form.styleNumber.trim() ||
+      !form.size.trim() ||
+      !form.influencerInstaId.trim() ||
+      !form.notes.trim()
+    ) {
       toast.error('Please fill all required fields');
       return;
     }
@@ -93,13 +98,16 @@ export default function OrderForm({ onCreated }) {
         </div>
 
         <div className="md:col-span-2">
-          <label className="label">Notes (optional)</label>
+          <label className="label">
+            Customer Address <span className="text-rose-500">*</span>{' '}
+          </label>
           <textarea
             name="notes"
             value={form.notes}
             onChange={handleChange}
+            required
             rows={3}
-            placeholder="Any special instructions for processing..."
+            placeholder="Enter customer address here"
             className="input resize-none"
           />
         </div>

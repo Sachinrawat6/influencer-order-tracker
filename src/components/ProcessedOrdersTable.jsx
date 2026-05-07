@@ -55,12 +55,10 @@ export default function ProcessedOrdersTable({ orders, onChanged }) {
               <th className="px-5 py-3 font-semibold">Size</th>
               <th className="px-5 py-3 font-semibold">Influencer</th>
               <th className="px-5 py-3 font-semibold">Shopify Order ID</th>
-              <th className="px-5 py-3 font-semibold">Notes</th>
+              <th className="px-5 py-3 font-semibold">Address</th>
               <th className="px-5 py-3 font-semibold">Processed</th>
               <th className="px-5 py-3 font-semibold">Status</th>
-              {isAdmin && (
-                <th className="px-5 py-3 font-semibold text-right">Action</th>
-              )}
+              {isAdmin && <th className="px-5 py-3 font-semibold text-right">Action</th>}
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
